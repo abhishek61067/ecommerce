@@ -19,7 +19,7 @@ const Home = () => (
       Your one-stop shop for everything!
     </Text>
     <Stack direction={{ base: "column", sm: "row" }} spacing={4}>
-      <Button as={Link} to="/signin" colorScheme="cyan" variant="solid">
+      <Button as={Link} to="/login" colorScheme="cyan" variant="solid">
         Sign In
       </Button>
       <Button as={Link} to="/register" colorScheme="cyan" variant="outline">
