@@ -44,7 +44,7 @@ const Login = () => {
         isClosable: true,
       });
       reset();
-      navigate("/"); // Redirect to home or dashboard
+      navigate("/catalog"); // Redirect to home or dashboard
     } catch (err) {
       toast({
         title: "Login Failed",

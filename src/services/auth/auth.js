@@ -55,3 +55,48 @@ export const useLogin = () => {
     },
   });
 };
+
+export const useAddProduct = () => {
+  const queryClient = useQueryClient();
+  const toast = useToast();
+
+  return useMutation({
+    mutationFn: async (formData) => {
+      const data = new FormData();
+      data.append("name", formData.name);
+      data.append("description", formData.description);
+      data.append("price", formData.price);
+      data.append("stock", formData.stock);
+      data.append("category", formData.category);
+      data.append("mainImage", formData.mainImage[0]);
+      if (formData.subImages) {
+        Array.from(formData.subImages).forEach((file) =>
+          data.append("subImages", file)
+        );
+      }
+      const response = await AxiosInstance.post("/products", data, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+      toast({
+        title: "Product added",
+        description: "The product was added successfully.",
+        status: "success",
+        duration: 4000,
+        isClosable: true,
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.response?.data?.message || "Failed to add product.",
+        status: "error",
+        duration: 4000,
+        isClosable: true,
+      });
+    },
+  });
+};
