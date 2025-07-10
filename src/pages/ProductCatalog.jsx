@@ -18,10 +18,11 @@ import AxiosInstance from "../services/auth/AxiosInstance";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
 import "swiper/css";
+import { ProductLimit } from "./../constants/constant";
 
 const fetchProducts = async (page) => {
   const res = await AxiosInstance.get("ecommerce/products", {
-    params: { page, limit: 10 },
+    params: { page, limit: ProductLimit },
   });
   return res.data.data;
 };
@@ -140,7 +141,7 @@ const ProductCatalog = () => {
             </Text>
             <Button
               onClick={() => setPage((prev) => prev + 1)}
-              isDisabled={page === totalPages}
+              isDisabled={data?.nextPage === null}
               colorScheme="blue"
             >
               Next

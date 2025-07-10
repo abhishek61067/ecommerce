@@ -44,7 +44,7 @@ const Login = () => {
         isClosable: true,
       });
       reset();
-      navigate("/catalog"); // Redirect to home or dashboard
+      navigate("/catalog"); //a Redirect to home or dashboard
     } catch (err) {
       toast({
         title: "Login Failed",
@@ -91,12 +91,22 @@ const Login = () => {
             />
           </FormControl>
           <Button
-            colorScheme="brand"
+            colorScheme="cyan"
             type="submit"
             isLoading={isSubmitting || isLoading}
             width="full"
+            color={"white"}
           >
             Login
+          </Button>
+          {/* Register Button */}
+          <Button
+            variant="outline"
+            colorScheme="gray"
+            width="full"
+            onClick={() => navigate("/register")}
+          >
+            Create an account
           </Button>
         </VStack>
       </form>

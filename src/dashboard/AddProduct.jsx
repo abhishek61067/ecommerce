@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Box,
   Button,
@@ -12,13 +12,13 @@ import {
   Image,
   SimpleGrid,
   Spinner,
+  useToast,
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import AxiosInstance from "../services/auth/AxiosInstance";
-import { useToast } from "@chakra-ui/react";
 
 const schema = yup.object().shape({
   name: yup.string().required("Product name is required"),
@@ -41,31 +41,17 @@ const schema = yup.object().shape({
     .test("fileType", "Only image files are allowed", (value) => {
       return value && value[0] && value[0].type.startsWith("image/");
     }),
-  subImages: yup
-    .mixed()
-    .test(
-      "maxLength",
-      "You can upload up to 4 images",
-      (value) => !value || value.length <= 4
-    )
-    .test("fileType", "Only image files are allowed", (value) => {
-      if (!value) return true;
-      for (let i = 0; i < value.length; i++) {
-        if (!value[i].type.startsWith("image/")) return false;
-      }
-      return true;
-    }),
 });
 
 const AddProduct = () => {
   const toast = useToast();
+  const [subImages, setSubImages] = useState([]);
 
-  // Fetch categories
   const { data: categories, isLoading: isCategoriesLoading } = useQuery({
     queryKey: ["categories"],
     queryFn: async () => {
       const res = await AxiosInstance.get("ecommerce/categories");
-      return res.data; // Adjust if your API structure is different
+      return res.data;
     },
   });
 
@@ -78,11 +64,11 @@ const AddProduct = () => {
       data.append("stock", formData.stock);
       data.append("category", formData.category);
       data.append("mainImage", formData.mainImage[0]);
-      if (formData.subImages) {
-        Array.from(formData.subImages).forEach((file) =>
-          data.append("subImages", file)
-        );
-      }
+
+      subImages.forEach((file) => {
+        data.append("subImages", file);
+      });
+
       const response = await AxiosInstance.post("ecommerce/products", data, {
         headers: { "Content-Type": "multipart/form-data" },
       });
@@ -96,6 +82,8 @@ const AddProduct = () => {
         duration: 4000,
         isClosable: true,
       });
+      reset();
+      setSubImages([]);
     },
     onError: (error) => {
       toast({
@@ -123,16 +111,32 @@ const AddProduct = () => {
       stock: "",
       category: "",
       mainImage: null,
-      subImages: null,
     },
   });
 
   const mainImageFile = watch("mainImage")?.[0];
-  const subImagesFiles = watch("subImages");
+
+  const handleSubImagesChange = (e) => {
+    const selected = Array.from(e.target.files);
+    const total = subImages.length + selected.length;
+    if (total > 4) {
+      toast({
+        title: "Image limit exceeded",
+        description: "You can only upload up to 4 sub images.",
+        status: "warning",
+        duration: 3000,
+        isClosable: true,
+      });
+      e.target.value = null;
+      return;
+    }
+
+    setSubImages((prev) => [...prev, ...selected]);
+    e.target.value = null;
+  };
 
   const onSubmit = async (data) => {
     await mutateAsync(data);
-    reset();
   };
 
   return (
@@ -156,6 +160,7 @@ const AddProduct = () => {
             <FormLabel>Name</FormLabel>
             <Input {...register("name")} placeholder="Product name" />
           </FormControl>
+
           <FormControl isInvalid={errors.description}>
             <FormLabel>Description</FormLabel>
             <Textarea
@@ -163,6 +168,7 @@ const AddProduct = () => {
               placeholder="Product description"
             />
           </FormControl>
+
           <FormControl isInvalid={errors.price}>
             <FormLabel>Price</FormLabel>
             <Input
@@ -172,6 +178,7 @@ const AddProduct = () => {
               placeholder="Price"
             />
           </FormControl>
+
           <FormControl isInvalid={errors.stock}>
             <FormLabel>Stock Quantity</FormLabel>
             <Input
@@ -180,21 +187,22 @@ const AddProduct = () => {
               placeholder="Stock quantity"
             />
           </FormControl>
+
           <FormControl isInvalid={errors.category}>
             <FormLabel>Category</FormLabel>
             {isCategoriesLoading ? (
               <Spinner />
             ) : (
               <Select placeholder="Select category" {...register("category")}>
-                {categories &&
-                  categories?.data?.categories?.map((cat) => (
-                    <option key={cat._id} value={cat._id}>
-                      {cat.name}
-                    </option>
-                  ))}
+                {categories?.data?.categories?.map((cat) => (
+                  <option key={cat._id} value={cat._id}>
+                    {cat.name}
+                  </option>
+                ))}
               </Select>
             )}
           </FormControl>
+
           <FormControl isInvalid={errors.mainImage}>
             <FormLabel>Main Image</FormLabel>
             <Input type="file" accept="image/*" {...register("mainImage")} />
@@ -207,29 +215,29 @@ const AddProduct = () => {
               />
             )}
           </FormControl>
-          <FormControl isInvalid={errors.subImages}>
+
+          <FormControl>
             <FormLabel>Sub Images (up to 4)</FormLabel>
             <Input
               type="file"
               accept="image/*"
               multiple
-              {...register("subImages")}
+              onChange={handleSubImagesChange}
             />
-            {subImagesFiles && subImagesFiles.length > 0 && (
+            {subImages.length > 0 && (
               <SimpleGrid columns={4} spacing={2} mt={2}>
-                {Array.from(subImagesFiles)
-                  .slice(0, 4)
-                  .map((file, idx) => (
-                    <Image
-                      key={idx}
-                      src={URL.createObjectURL(file)}
-                      alt={`Sub Preview ${idx + 1}`}
-                      boxSize="60px"
-                    />
-                  ))}
+                {subImages.map((file, idx) => (
+                  <Image
+                    key={idx}
+                    src={URL.createObjectURL(file)}
+                    alt={`Sub Preview ${idx + 1}`}
+                    boxSize="60px"
+                  />
+                ))}
               </SimpleGrid>
             )}
           </FormControl>
+
           <Button
             colorScheme="brand"
             type="submit"

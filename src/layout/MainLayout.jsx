@@ -1,4 +1,4 @@
-import { Box, HStack } from "@chakra-ui/react";
+import { Box, Button, HStack } from "@chakra-ui/react";
 import React from "react";
 import { Outlet } from "react-router-dom";
 
@@ -14,6 +14,31 @@ const MainLayout = () => {
       justifyContent="center"
       alignItems="center"
     >
+      <Box>
+        {/* add login and register button */}
+        <HStack spacing={4} mb={4}>
+          <Button
+            colorScheme="cyan"
+            as="a"
+            href="/login"
+            p={2}
+            color="white"
+            borderRadius="md"
+          >
+            Login
+          </Button>
+          <Button
+            variant={"outline"}
+            as="a"
+            href="/register"
+            p={2}
+            color="black"
+            borderRadius="md"
+          >
+            Register
+          </Button>
+        </HStack>
+      </Box>
       <Outlet />
     </Box>
   );
