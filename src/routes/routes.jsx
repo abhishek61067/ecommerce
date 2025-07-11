@@ -5,6 +5,8 @@ import MainLayout from "./../layout/MainLayout";
 import Login from "../components/Login";
 import AddProduct from "../dashboard/AddProduct";
 import ProductCatalog from "../pages/ProductCatalog";
+import ProductCatalogDetail from "../pages/ProductCatalogDetail";
+import CartPage from "../pages/Cart";
 
 export const router = createBrowserRouter([
   {
@@ -31,6 +33,14 @@ export const router = createBrowserRouter([
       {
         path: "/catalog",
         element: <ProductCatalog />, // Assuming this is the product catalog page
+      },
+      {
+        path: "product/:id",
+        element: <ProductCatalogDetail />, // Assuming this is the product detail page
+      },
+      {
+        path: "/cart",
+        element: <CartPage />,
       },
     ],
   },

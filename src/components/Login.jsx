@@ -58,7 +58,7 @@ const Login = () => {
 
   return (
     <Box
-      w="xl"
+      w={{ base: "90%", md: "400px" }}
       mt={10}
       p={8}
       borderWidth={1}

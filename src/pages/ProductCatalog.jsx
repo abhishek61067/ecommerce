@@ -19,6 +19,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
 import "swiper/css";
 import { ProductLimit } from "./../constants/constant";
+import { useNavigate } from "react-router-dom";
 
 const fetchProducts = async (page) => {
   const res = await AxiosInstance.get("ecommerce/products", {
@@ -31,6 +32,7 @@ const ProductCatalog = () => {
   const [page, setPage] = useState(1);
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const toast = useToast();
+  const navigate = useNavigate();
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["products", page],
@@ -51,7 +53,7 @@ const ProductCatalog = () => {
   }
 
   return (
-    <Box p={6}>
+    <Box p={3}>
       <Heading size="lg" mb={6}>
         🛍️ Product Catalog
       </Heading>
@@ -69,7 +71,8 @@ const ProductCatalog = () => {
               md: "repeat(3, 1fr)",
               lg: "repeat(4, 1fr)",
             }}
-            gap={6}
+            gap={2}
+            mx={2}
           >
             {products.map((product, index) => (
               <Box
@@ -79,9 +82,12 @@ const ProductCatalog = () => {
                 overflow="hidden"
                 boxShadow="md"
                 _hover={{ boxShadow: "lg" }}
-                width={"400px"}
+                width={{ base: "300px", lg: "400px" }}
                 onMouseEnter={() => setHoveredIndex(index)}
                 onMouseLeave={() => setHoveredIndex(null)}
+                onClick={() => {
+                  navigate(`/product/${product._id}`);
+                }}
               >
                 {hoveredIndex === index && product.subImages?.length ? (
                   <Swiper
