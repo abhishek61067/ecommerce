@@ -240,7 +240,7 @@ const AddProduct = () => {
                   size="sm"
                   ml={2}
                   variant="outline"
-                  colorScheme="blue"
+                  colorScheme="cyan"
                   onClick={onOpen}
                 >
                   + Add Category
@@ -295,7 +295,8 @@ const AddProduct = () => {
             </FormControl>
 
             <Button
-              colorScheme="blue"
+              colorScheme="cyan"
+              color={"white"}
               type="submit"
               isLoading={isSubmitting || productMutation.isLoading}
               width="full"

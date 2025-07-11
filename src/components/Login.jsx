@@ -37,9 +37,13 @@ const Login = () => {
       const response = await mutateAsync(formData);
       const { accessToken, refreshToken } = response.data;
 
-      if (accessToken && refreshToken) {
-        setTokens({ accessToken, refreshToken });
-      }
+      const userRole = response.data.user.role;
+      // Update role in store (and localStorage)
+      setTokens({
+        accessToken: accessToken,
+        refreshToken: refreshToken,
+        userRole,
+      });
 
       toast({
         title: "Login Successful",

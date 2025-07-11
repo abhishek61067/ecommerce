@@ -53,7 +53,12 @@ const Navbar = () => {
           </Link>
 
           {/* Product Catalog */}
-          <Box mx={{ base: 2, md: 20 }} mt={{ base: 2, md: 0 }}>
+          <Box
+            display="flex"
+            gap={{ base: 4, md: 10 }}
+            mx={{ base: 2, md: 20 }}
+            mt={{ base: 2, md: 0 }}
+          >
             <Link to="/catalog">
               <Text
                 fontSize={{ base: "md", md: "xl" }}
@@ -61,6 +66,16 @@ const Navbar = () => {
                 color="gray.700"
               >
                 Product Catalog
+              </Text>
+            </Link>
+
+            <Link to="/dashboard">
+              <Text
+                fontSize={{ base: "md", md: "xl" }}
+                _hover={{ color: "blue.300" }}
+                color="gray.700"
+              >
+                Dashboard
               </Text>
             </Link>
           </Box>
@@ -102,7 +117,7 @@ const Navbar = () => {
 
             <Link to="/cart">
               <Button
-                variant="ghost"
+                variant="outline"
                 position="relative"
                 size={{ base: "sm", md: "md" }}
               >

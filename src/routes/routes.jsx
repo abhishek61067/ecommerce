@@ -8,6 +8,8 @@ import ProductCatalog from "../pages/ProductCatalog";
 import ProductCatalogDetail from "../pages/ProductCatalogDetail";
 import CartPage from "../pages/Cart";
 import ProtectedRoute from "../components/auth/ProtectedRoute";
+import RoleProtectedRoute from "../components/auth/RoleProtectedRoute";
+import Unauthorized from "../pages/Unauthorized";
 
 export const router = createBrowserRouter([
   {
@@ -30,9 +32,9 @@ export const router = createBrowserRouter([
       {
         path: "/dashboard",
         element: (
-          <ProtectedRoute>
+          <RoleProtectedRoute allowedRoles={["ADMIN"]}>
             <AddProduct />
-          </ProtectedRoute>
+          </RoleProtectedRoute>
         ),
       },
       {
@@ -51,9 +53,13 @@ export const router = createBrowserRouter([
         path: "/cart",
         element: (
           <ProtectedRoute>
-            <Cart />
+            <CartPage />
           </ProtectedRoute>
         ),
+      },
+      {
+        path: "/unauthorized",
+        element: <Unauthorized />,
       },
     ],
   },

@@ -119,7 +119,8 @@ const Register = () => {
             </Select>
           </FormControl>
           <Button
-            colorScheme="brand"
+            colorScheme="cyan"
+            color={"white"}
             type="submit"
             isLoading={isSubmitting}
             width="full"
