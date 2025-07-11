@@ -88,6 +88,7 @@ const ProductCatalog = () => {
                 onClick={() => {
                   navigate(`/product/${product._id}`);
                 }}
+                cursor={"pointer"}
               >
                 {hoveredIndex === index && product.subImages?.length ? (
                   <Swiper

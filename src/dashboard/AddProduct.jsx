@@ -17,18 +17,17 @@ import {
   ModalOverlay,
   ModalContent,
   ModalHeader,
-  ModalFooter,
   ModalBody,
+  ModalFooter,
   ModalCloseButton,
   useDisclosure,
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import AxiosInstance from "../services/auth/AxiosInstance";
 
-// === Schema ===
 const schema = yup.object().shape({
   name: yup.string().required("Product name is required"),
   description: yup.string().required("Description is required"),
@@ -47,32 +46,99 @@ const schema = yup.object().shape({
   mainImage: yup
     .mixed()
     .required("Main image is required")
-    .test(
-      "fileType",
-      "Only image files are allowed",
-      (value) => value && value[0]?.type.startsWith("image/")
-    ),
+    .test("fileType", "Only image files are allowed", (value) => {
+      return value && value[0] && value[0].type.startsWith("image/");
+    }),
 });
 
-// === Component ===
 const AddProduct = () => {
   const toast = useToast();
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const queryClient = useQueryClient();
   const [subImages, setSubImages] = useState([]);
-  const [categoryCreated, setCategoryCreated] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState("");
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
-  // =========== Category API ===========
+  // Fetch categories
   const {
     data: categories,
     isLoading: isCategoriesLoading,
-    refetch,
+    refetch: refetchCategories,
   } = useQuery({
     queryKey: ["categories"],
     queryFn: async () => {
       const res = await AxiosInstance.get("ecommerce/categories");
       return res.data;
     },
-    enabled: categoryCreated, // only load after first category is created
+  });
+
+  // Create category mutation
+  const categoryMutation = useMutation({
+    mutationFn: async () => {
+      const res = await AxiosInstance.post("ecommerce/categories", {
+        name: newCategoryName,
+      });
+      return res.data;
+    },
+    onSuccess: () => {
+      toast({
+        title: "Category Created",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+      setNewCategoryName("");
+      onClose();
+      refetchCategories();
+    },
+    onError: () => {
+      toast({
+        title: "Failed to create category",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    },
+  });
+
+  // Add product mutation
+  const productMutation = useMutation({
+    mutationFn: async (formData) => {
+      const data = new FormData();
+      data.append("name", formData.name);
+      data.append("description", formData.description);
+      data.append("price", formData.price);
+      data.append("stock", formData.stock);
+      data.append("category", formData.category);
+      data.append("mainImage", formData.mainImage[0]);
+
+      subImages.forEach((file) => {
+        data.append("subImages", file);
+      });
+
+      const response = await AxiosInstance.post("ecommerce/products", data, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      return response.data;
+    },
+    onSuccess: () => {
+      toast({
+        title: "Product added",
+        status: "success",
+        duration: 4000,
+        isClosable: true,
+      });
+      reset();
+      setSubImages([]);
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.response?.data?.message || "Failed to add product.",
+        status: "error",
+        duration: 4000,
+        isClosable: true,
+      });
+    },
   });
 
   const {
@@ -106,89 +172,11 @@ const AddProduct = () => {
         duration: 3000,
         isClosable: true,
       });
-      e.target.value = null;
       return;
     }
     setSubImages((prev) => [...prev, ...selected]);
     e.target.value = null;
   };
-
-  const createCategoryMutation = useMutation({
-    mutationFn: async ({ name }) => {
-      const res = await AxiosInstance.post("ecommerce/categories", { name });
-      return res.data;
-    },
-    onSuccess: () => {
-      toast({
-        title: "Category Created",
-        description: "Now you can add products.",
-        status: "success",
-        duration: 3000,
-        isClosable: true,
-      });
-      setCategoryCreated(true);
-      refetch();
-      onClose();
-    },
-    onError: () => {
-      toast({
-        title: "Failed",
-        description: "Could not create category.",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
-    },
-  });
-
-  const {
-    register: registerCategory,
-    handleSubmit: handleCategorySubmit,
-    reset: resetCategory,
-    formState: { isSubmitting: isCategorySubmitting },
-  } = useForm();
-
-  const onSubmitCategory = async (data) => {
-    await createCategoryMutation.mutateAsync(data);
-    resetCategory();
-  };
-
-  const productMutation = useMutation({
-    mutationFn: async (formData) => {
-      const data = new FormData();
-      data.append("name", formData.name);
-      data.append("description", formData.description);
-      data.append("price", formData.price);
-      data.append("stock", formData.stock);
-      data.append("category", formData.category);
-      data.append("mainImage", formData.mainImage[0]);
-      subImages.forEach((file) => data.append("subImages", file));
-      const response = await AxiosInstance.post("ecommerce/products", data, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      return response.data;
-    },
-    onSuccess: () => {
-      toast({
-        title: "Product added",
-        description: "The product was added successfully.",
-        status: "success",
-        duration: 4000,
-        isClosable: true,
-      });
-      reset();
-      setSubImages([]);
-    },
-    onError: (error) => {
-      toast({
-        title: "Error",
-        description: error.response?.data?.message || "Failed to add product.",
-        status: "error",
-        duration: 4000,
-        isClosable: true,
-      });
-    },
-  });
 
   const onSubmit = async (data) => {
     await productMutation.mutateAsync(data);
@@ -196,40 +184,10 @@ const AddProduct = () => {
 
   return (
     <>
-      {/* Category Creation Modal */}
-      <Modal isOpen={!categoryCreated || isOpen} onClose={onClose} isCentered>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Create Category</ModalHeader>
-          <ModalCloseButton />
-          <form onSubmit={handleCategorySubmit(onSubmitCategory)}>
-            <ModalBody>
-              <FormControl>
-                <FormLabel>Category Name</FormLabel>
-                <Input
-                  {...registerCategory("name", { required: true })}
-                  placeholder="e.g. Shirts"
-                />
-              </FormControl>
-            </ModalBody>
-            <ModalFooter>
-              <Button
-                type="submit"
-                colorScheme="blue"
-                isLoading={isCategorySubmitting}
-              >
-                Create
-              </Button>
-            </ModalFooter>
-          </form>
-        </ModalContent>
-      </Modal>
-
-      {/* Product Form */}
       <Box
-        minW="xl"
+        w={{ base: "90%", lg: "50%" }}
         mx="auto"
-        m={100}
+        mt={100}
         p={8}
         borderWidth={1}
         borderRadius="lg"
@@ -252,7 +210,7 @@ const AddProduct = () => {
               <FormLabel>Description</FormLabel>
               <Textarea
                 {...register("description")}
-                placeholder="Product description"
+                placeholder="Description"
               />
             </FormControl>
 
@@ -276,7 +234,18 @@ const AddProduct = () => {
             </FormControl>
 
             <FormControl isInvalid={errors.category}>
-              <FormLabel>Category</FormLabel>
+              <FormLabel>
+                Category{" "}
+                <Button
+                  size="sm"
+                  ml={2}
+                  variant="outline"
+                  colorScheme="blue"
+                  onClick={onOpen}
+                >
+                  + Add Category
+                </Button>
+              </FormLabel>
               {isCategoriesLoading ? (
                 <Spinner />
               ) : (
@@ -326,7 +295,7 @@ const AddProduct = () => {
             </FormControl>
 
             <Button
-              colorScheme="brand"
+              colorScheme="blue"
               type="submit"
               isLoading={isSubmitting || productMutation.isLoading}
               width="full"
@@ -336,6 +305,38 @@ const AddProduct = () => {
           </VStack>
         </form>
       </Box>
+
+      {/* Add Category Modal */}
+      <Modal isOpen={isOpen} onClose={onClose} isCentered>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Add New Category</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <FormControl>
+              <FormLabel>Category Name</FormLabel>
+              <Input
+                value={newCategoryName}
+                onChange={(e) => setNewCategoryName(e.target.value)}
+                placeholder="e.g. Shirts"
+              />
+            </FormControl>
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              colorScheme="blue"
+              mr={3}
+              onClick={() => categoryMutation.mutate()}
+              isLoading={categoryMutation.isLoading}
+            >
+              Create
+            </Button>
+            <Button variant="ghost" onClick={onClose}>
+              Cancel
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </>
   );
 };

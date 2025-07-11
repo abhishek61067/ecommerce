@@ -8,15 +8,18 @@ import {
   Input,
   Heading,
   VStack,
+  useToast,
 } from "@chakra-ui/react";
-import { useLogin } from "../services/auth/auth";
-import { useToast } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
+import { useLogin } from "../services/auth/auth";
+import useAuthStore from "/src/store/authStore";
 
 const Login = () => {
+  const { setTokens } = useAuthStore();
   const toast = useToast();
   const navigate = useNavigate();
-  const { mutateAsync, isLoading } = useLogin();
+  const { mutateAsync } = useLogin(); // Removed isLoading
+
   const {
     register,
     handleSubmit,
@@ -32,10 +35,12 @@ const Login = () => {
   const onSubmit = async (formData) => {
     try {
       const response = await mutateAsync(formData);
-      if (response.data.accessToken && response.data.refreshToken) {
-        localStorage.setItem("accessToken", response.data.accessToken);
-        localStorage.setItem("refreshToken", response.data.refreshToken);
+      const { accessToken, refreshToken } = response.data;
+
+      if (accessToken && refreshToken) {
+        setTokens({ accessToken, refreshToken });
       }
+
       toast({
         title: "Login Successful",
         description: "You have successfully logged in.",
@@ -43,8 +48,9 @@ const Login = () => {
         duration: 5000,
         isClosable: true,
       });
+
       reset();
-      navigate("/catalog"); //a Redirect to home or dashboard
+      navigate("/catalog");
     } catch (err) {
       toast({
         title: "Login Failed",
@@ -81,6 +87,7 @@ const Login = () => {
               {...register("email", { required: "Email is required" })}
             />
           </FormControl>
+
           <FormControl isInvalid={errors.password}>
             <FormLabel>Password</FormLabel>
             <Input
@@ -90,16 +97,17 @@ const Login = () => {
               {...register("password", { required: "Password is required" })}
             />
           </FormControl>
+
           <Button
             colorScheme="cyan"
             type="submit"
-            isLoading={isSubmitting || isLoading}
+            isLoading={isSubmitting} // ✅ Use only isSubmitting
             width="full"
-            color={"white"}
+            color="white"
           >
             Login
           </Button>
-          {/* Register Button */}
+
           <Button
             variant="outline"
             colorScheme="gray"

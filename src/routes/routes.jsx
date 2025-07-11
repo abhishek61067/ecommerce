@@ -7,6 +7,7 @@ import AddProduct from "../dashboard/AddProduct";
 import ProductCatalog from "../pages/ProductCatalog";
 import ProductCatalogDetail from "../pages/ProductCatalogDetail";
 import CartPage from "../pages/Cart";
+import ProtectedRoute from "../components/auth/ProtectedRoute";
 
 export const router = createBrowserRouter([
   {
@@ -28,11 +29,19 @@ export const router = createBrowserRouter([
       },
       {
         path: "/dashboard",
-        element: <AddProduct />,
+        element: (
+          <ProtectedRoute>
+            <AddProduct />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "/catalog",
-        element: <ProductCatalog />, // Assuming this is the product catalog page
+        element: (
+          <ProtectedRoute>
+            <ProductCatalog />
+          </ProtectedRoute>
+        ), // Assuming this is the product catalog page
       },
       {
         path: "product/:id",
@@ -40,7 +49,11 @@ export const router = createBrowserRouter([
       },
       {
         path: "/cart",
-        element: <CartPage />,
+        element: (
+          <ProtectedRoute>
+            <Cart />
+          </ProtectedRoute>
+        ),
       },
     ],
   },
