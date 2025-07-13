@@ -76,6 +76,7 @@ const ProductCatalog = () => {
           >
             {products.map((product, index) => (
               <Box
+                bg={"white"}
                 key={product._id}
                 borderWidth="1px"
                 borderRadius="lg"
