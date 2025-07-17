@@ -1,164 +1,105 @@
-import React, { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import React from "react";
 import {
   Box,
-  Image,
-  Text,
-  Grid,
-  Button,
   Heading,
-  Flex,
-  Spinner,
-  Center,
-  useToast,
+  Text,
+  Image,
+  SimpleGrid,
+  VStack,
+  Button,
+  useColorModeValue,
 } from "@chakra-ui/react";
-import AxiosInstance from "../services/auth/AxiosInstance";
 
-// Swiper imports
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay } from "swiper/modules";
-import "swiper/css";
-import { ProductLimit } from "./../constants/constant";
-import { useNavigate } from "react-router-dom";
+const dummyProducts = [
+  {
+    id: 1,
+    name: "Wireless Headphones",
+    price: "$79.99",
+    image:
+      "https://plus.unsplash.com/premium_photo-1679513691474-73102089c117?q=80&w=813&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  },
+  {
+    id: 2,
+    name: "Smart Watch",
+    price: "$149.99",
+    image:
+      "https://plus.unsplash.com/premium_photo-1679513691474-73102089c117?q=80&w=813&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  },
+  {
+    id: 3,
+    name: "Gaming Mouse",
+    price: "$49.99",
+    image:
+      "https://plus.unsplash.com/premium_photo-1679513691474-73102089c117?q=80&w=813&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  },
+  {
+    id: 4,
+    name: "Bluetooth Speaker",
+    price: "$99.99",
+    image:
+      "https://plus.unsplash.com/premium_photo-1679513691474-73102089c117?q=80&w=813&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  },
+  {
+    id: 5,
+    name: "Keyboard",
+    price: "$69.99",
+    image:
+      "https://plus.unsplash.com/premium_photo-1679513691474-73102089c117?q=80&w=813&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  },
+];
 
-const fetchProducts = async (page) => {
-  const res = await AxiosInstance.get("ecommerce/products", {
-    params: { page, limit: ProductLimit },
-  });
-  return res.data.data;
-};
-
-const ProductCatalog = () => {
-  const [page, setPage] = useState(1);
-  const [hoveredIndex, setHoveredIndex] = useState(null);
-  const toast = useToast();
-  const navigate = useNavigate();
-
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ["products", page],
-    queryFn: () => fetchProducts(page),
-    keepPreviousData: true,
-  });
-
-  const products = data?.products || [];
-  const totalPages = data?.data?.totalPages || 1;
-
-  if (isError) {
-    toast({
-      title: "Error loading products",
-      status: "error",
-      duration: 3000,
-      isClosable: true,
-    });
-  }
-
+const ProductCard = ({ product }) => {
   return (
-    <Box p={3}>
-      <Heading size="lg" mb={6}>
-        🛍️ Product Catalog
-      </Heading>
-
-      {isLoading ? (
-        <Center>
-          <Spinner size="xl" />
-        </Center>
-      ) : (
-        <>
-          <Grid
-            templateColumns={{
-              base: "repeat(1, 1fr)",
-              sm: "repeat(2, 1fr)",
-              md: "repeat(3, 1fr)",
-              lg: "repeat(4, 1fr)",
-            }}
-            gap={2}
-            mx={2}
-          >
-            {[].map((product, index) => (
-              <Box
-                bg={"white"}
-                key={product._id}
-                borderWidth="1px"
-                borderRadius="lg"
-                overflow="hidden"
-                boxShadow="md"
-                _hover={{ boxShadow: "lg" }}
-                width={{ base: "300px", lg: "400px" }}
-                onMouseEnter={() => setHoveredIndex(index)}
-                onMouseLeave={() => setHoveredIndex(null)}
-                onClick={() => {
-                  navigate(`/product/${product._id}`);
-                }}
-                cursor={"pointer"}
-              >
-                {hoveredIndex === index && product.subImages?.length ? (
-                  <Swiper
-                    modules={[Autoplay]}
-                    autoplay={{ delay: 1000, disableOnInteraction: false }}
-                    loop
-                    style={{ width: "400px", height: "200px" }}
-                  >
-                    {[product.mainImage, ...product.subImages].map((img, i) => (
-                      <SwiperSlide key={i}>
-                        <Image
-                          src={img.url}
-                          alt={`${product.name} slide ${i}`}
-                          objectFit="cover"
-                          w="100%"
-                          h="200px"
-                        />
-                      </SwiperSlide>
-                    ))}
-                  </Swiper>
-                ) : (
-                  <Image
-                    src={product.mainImage?.url}
-                    alt={product.name}
-                    objectFit="cover"
-                    w="100%"
-                    h="200px"
-                  />
-                )}
-
-                <Box p={4}>
-                  <Text fontWeight="bold" fontSize="lg" noOfLines={1}>
-                    {product.name}
-                  </Text>
-                  <Text color="gray.500" noOfLines={2}>
-                    {product.description}
-                  </Text>
-                  <Text color="blue.600" fontWeight="semibold" mt={2}>
-                    Rs. {product.price}
-                  </Text>
-                </Box>
-              </Box>
-            ))}
-          </Grid>
-
-          {/* Pagination Controls */}
-          <Flex justify="space-between" align="center" mt={8}>
-            <Button
-              onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-              isDisabled={page === 1}
-              colorScheme="blue"
-            >
-              Previous
-            </Button>
-            <Text>
-              Page {page} of {totalPages}
-            </Text>
-            <Button
-              onClick={() => setPage((prev) => prev + 1)}
-              isDisabled={data?.nextPage === null}
-              colorScheme="blue"
-            >
-              Next
-            </Button>
-          </Flex>
-        </>
-      )}
+    <Box
+      bg={useColorModeValue("whiteAlpha.200", "whiteAlpha.100")}
+      backdropFilter="blur(8px)"
+      borderRadius="xl"
+      overflow="hidden"
+      boxShadow="lg"
+      p={4}
+      transition="all 0.3s"
+      _hover={{ transform: "translateY(-5px)", boxShadow: "xl" }}
+    >
+      <Image
+        src={product.image}
+        alt={product.name}
+        borderRadius="md"
+        mx="auto"
+        mb={4}
+      />
+      <VStack spacing={1} align="start">
+        <Text fontWeight="bold">{product.name}</Text>
+        <Text color="gray.500">{product.price}</Text>
+        <Button size="sm" colorScheme="cyan" mt={2}>
+          Buy Now
+        </Button>
+      </VStack>
     </Box>
   );
 };
 
-export default ProductCatalog;
+const ProductPage = () => {
+  return (
+    <Box p={20}>
+      <Box
+        w={"70vw"}
+        p={"10"}
+        mx="auto"
+        bg={useColorModeValue("whiteAlpha.300", "blackAlpha.300")}
+        backdropFilter="blur(16px)"
+        borderRadius="2xl"
+      >
+        <Heading mb={6} textAlign="center" size="xl" color="gray.400">
+          Explore Our Products
+        </Heading>
+        <SimpleGrid columns={{ base: 1, sm: 2, md: 3, lg: 4 }} spacing={6}>
+          {dummyProducts.map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
+        </SimpleGrid>
+      </Box>
+    </Box>
+  );
+};
+
+export default ProductPage;

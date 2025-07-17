@@ -62,7 +62,7 @@ const Navbar = () => {
               <Text
                 fontSize={{ base: "md", md: "xl" }}
                 _hover={{ color: "blue.300" }}
-                color="gray.700"
+                color="gray.400"
               >
                 Product Catalog
               </Text>
@@ -72,7 +72,7 @@ const Navbar = () => {
               <Text
                 fontSize={{ base: "md", md: "xl" }}
                 _hover={{ color: "blue.300" }}
-                color="gray.700"
+                color="gray.400"
               >
                 Dashboard
               </Text>

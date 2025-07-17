@@ -42,26 +42,26 @@ const RoleProtectedRoute = ({ allowedRoles = [], children }) => {
       );
     }
 
-    // return (
-    //   <Modal isOpen={isOpen} onClose={handleClose} isCentered>
-    //     <ModalOverlay />
-    //     <ModalContent>
-    //       <ModalHeader>Access Denied</ModalHeader>
-    //       <ModalBody>
-    //         <Text>
-    //           {!accessToken
-    //             ? "You must be logged in to access this page."
-    //             : "You do not have permission to access this page."}
-    //         </Text>
-    //       </ModalBody>
-    //       <ModalFooter>
-    //         <Button colorScheme="cyan" mr={3} onClick={handleClose}>
-    //           {!accessToken ? "Go to Login" : "Close"}
-    //         </Button>
-    //       </ModalFooter>
-    //     </ModalContent>
-    //   </Modal>
-    // );
+    return (
+      <Modal isOpen={isOpen} onClose={handleClose} isCentered>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Access Denied</ModalHeader>
+          <ModalBody>
+            <Text>
+              {!accessToken
+                ? "You must be logged in to access this page."
+                : "You do not have permission to access this page."}
+            </Text>
+          </ModalBody>
+          <ModalFooter>
+            <Button colorScheme="cyan" mr={3} onClick={handleClose}>
+              {!accessToken ? "Go to Login" : "Close"}
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    );
   }
 
   return children;
