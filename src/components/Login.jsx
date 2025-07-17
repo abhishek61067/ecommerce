@@ -74,8 +74,9 @@ const Login = () => {
       borderWidth={1}
       borderRadius="lg"
       boxShadow="md"
-      bg="white"
-      color="black"
+      color="white"
+      // border={"1px"}
+      // borderColor={"gray.600"}
     >
       <Heading mb={6} size="lg" textAlign="center">
         Login
@@ -114,7 +115,7 @@ const Login = () => {
 
           <Button
             variant="outline"
-            colorScheme="gray"
+            colorScheme="cyan"
             width="full"
             onClick={() => navigate("/register")}
           >

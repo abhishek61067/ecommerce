@@ -19,9 +19,6 @@ export const useRegister = () => {
       const response = await AxiosInstance.post("users/register", data);
       return response.data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["users"] });
-    },
   });
 };
 
@@ -33,25 +30,6 @@ export const useLogin = () => {
     mutationFn: async (data) => {
       const response = await AxiosInstance.post("users/login", data);
       return response.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["users"] });
-      toast({
-        title: "Login Successful",
-        description: "You have successfully logged in.",
-        status: "success",
-        duration: 5000,
-        isClosable: true,
-      });
-    },
-    onError: (error) => {
-      toast({
-        title: "Login Failed",
-        description: error.response?.data?.message || "Invalid credentials.",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
     },
   });
 };

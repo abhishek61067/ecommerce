@@ -31,8 +31,7 @@ const Navbar = () => {
 
   return (
     <Box
-      bg="gray.50"
-      boxShadow="sm"
+      boxShadow="0 4px 10px rgba(0, 0, 0, 0.2)" // black shadow with opacity
       py={3}
       position="fixed"
       top="0"

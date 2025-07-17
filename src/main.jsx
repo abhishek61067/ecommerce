@@ -20,12 +20,17 @@ const colors = {
   },
 };
 
-const theme = extendTheme({ colors });
-
+const theme = extendTheme({
+  fonts: {
+    heading: `'Josefin sans', sans-serif`,
+    body: `'Inter', sans-serif`,
+  },
+  colors,
+});
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
-      <ChakraProvider>
+      <ChakraProvider theme={theme}>
         <RouterProvider router={router} />
       </ChakraProvider>
     </QueryClientProvider>

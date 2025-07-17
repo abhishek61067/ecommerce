@@ -1,43 +1,36 @@
 import React from "react";
-import { Box, Heading, Text, Button, VStack, Image } from "@chakra-ui/react";
+import { Box, Heading, Text, Button, VStack, Icon } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
+import { WarningTwoIcon } from "@chakra-ui/icons";
 
 const Unauthorized = () => {
   const navigate = useNavigate();
 
+  const handleLoginRedirect = () => {
+    navigate("/login");
+  };
+
   return (
     <Box
-      minH="100vh"
       display="flex"
       alignItems="center"
       justifyContent="center"
-      bg="gray.50"
-      px={4}
+      p={4}
+      rounded={"xl"}
+      boxShadow="0 4px 10px rgba(0, 0, 0, 0.2)" // black shadow with opacity
     >
-      <VStack spacing={6} textAlign="center">
-        <Image
-          src="https://cdn-icons-png.flaticon.com/512/595/595067.png"
-          alt="Unauthorized"
-          boxSize={{ base: "120px", md: "150px" }}
-        />
-        <Heading size="lg" color="red.500">
-          Unauthorized Access
+      <VStack spacing={6} maxW="lg" p={8} borderRadius="lg" textAlign="center">
+        <Icon as={WarningTwoIcon} w={10} h={10} color="cyan.500" />
+        <Heading size="lg" color="gray.400">
+          Access Denied
         </Heading>
-        <Text fontSize="md" color="gray.600">
-          You do not have permission to view this page.
+        <Text color="gray.600">
+          You need to be an <b>admin</b> to view this page. Please log in with
+          an admin account.
         </Text>
-        <VStack spacing={3}>
-          <Button
-            colorScheme="cyan"
-            color="white"
-            onClick={() => navigate("/login")}
-          >
-            Login
-          </Button>
-          <Button variant="outline" onClick={() => navigate("/register")}>
-            Register
-          </Button>
-        </VStack>
+        <Button colorScheme="cyan" onClick={handleLoginRedirect}>
+          Login as Admin
+        </Button>
       </VStack>
     </Box>
   );

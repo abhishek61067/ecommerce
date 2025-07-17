@@ -1,3 +1,5 @@
+import { Text, Link as ChakraLink } from "@chakra-ui/react";
+import { Link as RouterLink } from "react-router-dom";
 import React from "react";
 import { useForm } from "react-hook-form";
 import {
@@ -74,8 +76,6 @@ const Register = () => {
       borderWidth={1}
       borderRadius="lg"
       boxShadow="md"
-      bg="white"
-      color={"black"}
     >
       <Heading mb={6} size="lg" textAlign="center">
         Register
@@ -127,6 +127,17 @@ const Register = () => {
           >
             Register
           </Button>
+          <Text fontSize="sm" color="gray.600">
+            Already have an account?{" "}
+            <ChakraLink
+              as={RouterLink}
+              to="/login"
+              color="cyan.500"
+              fontWeight="medium"
+            >
+              Login
+            </ChakraLink>
+          </Text>
         </VStack>
       </form>
     </Box>

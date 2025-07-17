@@ -74,7 +74,7 @@ const ProductCatalog = () => {
             gap={2}
             mx={2}
           >
-            {products.map((product, index) => (
+            {[].map((product, index) => (
               <Box
                 bg={"white"}
                 key={product._id}

@@ -8,7 +8,7 @@ const MainLayout = () => {
     <Box
       w="100vw"
       minH="100vh"
-      bgGradient="linear(to-r, cyan.200, white)"
+      bgGradient="linear(to-r, #10263b, #0a111b)"
       p={4}
       display="flex"
       flexDirection="column"
