@@ -87,7 +87,7 @@ const Navbar = () => {
                 <Link to="/login">
                   <Button
                     colorScheme="cyan"
-                    color="white"
+                    color="black"
                     size={{ base: "sm", md: "md" }}
                   >
                     Login
@@ -96,7 +96,7 @@ const Navbar = () => {
                 <Link to="/register">
                   <Button
                     variant="outline"
-                    colorScheme="gray"
+                    colorScheme="cyan"
                     size={{ base: "sm", md: "md" }}
                   >
                     Register
@@ -114,7 +114,7 @@ const Navbar = () => {
               </Button>
             )}
 
-            <Link to="/cart">
+            {/* <Link to="/cart">
               <Button
                 variant="outline"
                 position="relative"
@@ -135,7 +135,7 @@ const Navbar = () => {
                   </Badge>
                 )}
               </Button>
-            </Link>
+            </Link> */}
           </HStack>
         </Flex>
       </Container>

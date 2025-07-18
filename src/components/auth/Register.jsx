@@ -120,7 +120,7 @@ const Register = () => {
           </FormControl>
           <Button
             colorScheme="cyan"
-            color={"white"}
+            color={"black"}
             type="submit"
             isLoading={isSubmitting}
             width="full"

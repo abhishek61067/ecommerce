@@ -108,7 +108,7 @@ const Login = () => {
             type="submit"
             isLoading={isSubmitting} // ✅ Use only isSubmitting
             width="full"
-            color="white"
+            color="black"
           >
             Login
           </Button>
