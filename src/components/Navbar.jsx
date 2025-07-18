@@ -106,7 +106,7 @@ const Navbar = () => {
             ) : (
               <Button
                 colorScheme="cyan"
-                color="white"
+                color="black"
                 size={{ base: "sm", md: "md" }}
                 onClick={logout}
               >
